@@ -17,10 +17,21 @@ def M2Aratio(k, M):
 
 @scalar_or_array
 def Aratio2M(k, Aratio, supersonic=True):
+  if np.isscalar(Aratio):
+    return Aratio2M_scalar(k, Aratio, supersonic)
+  else:
+    n = len(Aratio)
+    M = np.zeros(n)
+    for i in range(n):
+      M[i] = Aratio2M_scalar(k, Aratio[i], supersonic)
+    return M    
+
+def Aratio2M_scalar(k, Aratio, supersonic=True):
   '''Given specific heat ratio and A/A*, compute Mach number (flag determines subsonic or supersonic solution'''
   def f(M):
     return Aratio - M2Aratio(k, M)
   if supersonic:
+    print(Aratio)
     M = fsolve(f, 5.0, xtol=1e-12)[0]
     assert M >= 1.0, "Mach number is subsonic."
   else:
