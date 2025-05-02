@@ -1,10 +1,21 @@
 import numpy as np
 from scipy.optimize import fsolve
 
+def scalar_or_array(func):
+  '''Decorator so that func will return a scalar if second argument is a scalar else a numpy array'''
+  def wrapper(a, b, *args, **kwargs):
+    if np.isscalar(b):
+      return func(a, b, *args, **kwargs)
+    else:
+      return func(a, np.asarray(b), *args, **kwargs)
+  return wrapper
+
+@scalar_or_array
 def M2Aratio(k, M):
   '''Given specific heat ratio and Mach number, compute A/A*'''
   return ((k+1.0)/2.0)**(-(k+1.0)/(2.0*(k-1.0)))*(1.0 + (k-1.0)/2.0*M**2.0)**((k+1.0)/(2.0*(k-1.0)))/M
 
+@scalar_or_array
 def Aratio2M(k, Aratio, supersonic=True):
   '''Given specific heat ratio and A/A*, compute Mach number (flag determines subsonic or supersonic solution'''
   def f(M):
@@ -17,26 +28,32 @@ def Aratio2M(k, Aratio, supersonic=True):
     assert M <= 1.0, "Mach number is supersonic."
   return M
 
+@scalar_or_array
 def M2Pratio(k, M):
   '''Given specific heat ratio and Mach number, compute P/P_t'''
   return (1.0 + (k-1.0)/2.0*M**2.0)**(-k/(k-1.0))
 
+@scalar_or_array
 def Pratio2M(k, Pratio):
   '''Given specific heat ratio and P/P_t, compute Mach number'''
   return np.sqrt((Pratio**((k-1.0)/(-k)) - 1.0)*2.0/(k-1.0))
 
+@scalar_or_array
 def M2Tratio(k, M):
   '''Given specific heat ratio and Mach number, compute T/T_t'''
   return (1.0 + (k-1.0)/2.0*M**2.0)**-1.0
 
+@scalar_or_array
 def Tratio2M(k, Tratio):
   '''Given specific heat ratio and P/P_t, compute Mach number'''
   return np.sqrt((Tratio**-1.0 - 1.0)*2.0/(k-1.0))
 
+@scalar_or_array
 def M2Rratio(k, M):
   '''Given specific heat ratio and Mach number, compute rho/rho_t'''
   return (1.0 + (k-1.0)/2.0*M**2.0)**(-1.0/(k-1.0))
 
+@scalar_or_array
 def Rratio2M(k, Rratio):
   '''Given specific heat ratio and rho/rho_t, compute Mach number'''
   return np.sqrt((Rratio**((k-1.0)/(-1.0)) - 1.0)*2.0/(k-1.0))
