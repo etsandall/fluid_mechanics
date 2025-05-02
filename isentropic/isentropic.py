@@ -31,7 +31,6 @@ def Aratio2M_scalar(k, Aratio, supersonic=True):
   def f(M):
     return Aratio - M2Aratio(k, M)
   if supersonic:
-    print(Aratio)
     M = fsolve(f, 5.0, xtol=1e-12)[0]
     assert M >= 1.0, "Mach number is subsonic."
   else:
